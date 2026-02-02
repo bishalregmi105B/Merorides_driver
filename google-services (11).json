@@ -1,0 +1,146 @@
+{
+  "project_info": {
+    "project_number": "608662564660",
+    "project_id": "merorides-driver",
+    "storage_bucket": "merorides-driver.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608662564660:android:841fdab21611df09bfbf61",
+        "android_client_info": {
+          "package_name": "com.lamasparsha.merodriver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "608662564660-0b7ujh76336scr069el1otb0r1umcuo4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lamasparsha.merodriver",
+            "certificate_hash": "6ed72338c43df3cb349e908bf786b83876bda56c"
+          }
+        },
+        {
+          "client_id": "608662564660-7mc0cotgmnnvoi8hvtffpnoe3hv9ib5n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lamasparsha.merodriver",
+            "certificate_hash": "9f7cd251917e666f308cbc9a8bb95be36c88eca6"
+          }
+        },
+        {
+          "client_id": "608662564660-gsoo3j5p9c80ma3k964pfvdcqn1ubetq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lamasparsha.merodriver",
+            "certificate_hash": "f5e621a85398dd37508a6e87322fc94271b9182f"
+          }
+        },
+        {
+          "client_id": "608662564660-j4pgrh701fhd71trtlhqcl17qec2n0m9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lamasparsha.merodriver",
+            "certificate_hash": "858561fa2a872bb1f9d1555a04c37c1138901159"
+          }
+        },
+        {
+          "client_id": "608662564660-jtigk4ls0h555ibq00qcdrak7kt13pbp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBJnVTcW_29irNz2syDvskex0zxtrrPW0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "608662564660-jtigk4ls0h555ibq00qcdrak7kt13pbp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "608662564660-ob85e68hbg8bfjnnej08gprt1vdcvl30.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.merorides.meroridesdriver"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608662564660:android:a8b2ec79c25be05dbfbf61",
+        "android_client_info": {
+          "package_name": "com.merorides.meroridesdriver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "608662564660-ftr8l7nqr8kiq20jd8l62djn6ecik662.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.merorides.meroridesdriver",
+            "certificate_hash": "f5e621a85398dd37508a6e87322fc94271b9182f"
+          }
+        },
+        {
+          "client_id": "608662564660-lci3s6i96cb8sf1f2ah954fhvfefos7s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.merorides.meroridesdriver",
+            "certificate_hash": "858561fa2a872bb1f9d1555a04c37c1138901159"
+          }
+        },
+        {
+          "client_id": "608662564660-n7nckrml7joqgqgsivo9js0p84v2qubb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.merorides.meroridesdriver",
+            "certificate_hash": "6ed72338c43df3cb349e908bf786b83876bda56c"
+          }
+        },
+        {
+          "client_id": "608662564660-tuj1slf4hi2r6r4c14rqk5po77jt7lnt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.merorides.meroridesdriver",
+            "certificate_hash": "9f7cd251917e666f308cbc9a8bb95be36c88eca6"
+          }
+        },
+        {
+          "client_id": "608662564660-jtigk4ls0h555ibq00qcdrak7kt13pbp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBJnVTcW_29irNz2syDvskex0zxtrrPW0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "608662564660-jtigk4ls0h555ibq00qcdrak7kt13pbp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "608662564660-ob85e68hbg8bfjnnej08gprt1vdcvl30.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.merorides.meroridesdriver"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
