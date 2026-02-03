@@ -116,7 +116,7 @@ workflows:
   full-workflow:
     name: Full Build (Android + iOS)
     instance_type: mac_mini_m1
-    max_build_duration: 180
+    max_build_duration: 120
     environment:
       android_signing:
         - ovoride_driver_key
