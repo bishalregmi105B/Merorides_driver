@@ -59,6 +59,7 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
+        bundle_identifier: com.lamasparsha.merodriver
 
       vars:
         BUNDLE_ID: "com.lamasparsha.merodriver"
@@ -122,6 +123,7 @@ workflows:
         - ovoride_driver_key
       ios_signing:
         distribution_type: app_store
+        bundle_identifier: com.lamasparsha.merodriver
 
       vars:
         PACKAGE_NAME: "com.lamasparsha.merodriver"
