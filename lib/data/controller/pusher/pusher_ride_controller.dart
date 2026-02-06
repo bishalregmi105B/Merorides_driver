@@ -31,6 +31,7 @@ class PusherRideController extends GetxController {
   void onInit() {
     super.onInit();
     PusherManager().addListener(onEvent);
+    ensureConnection();
   }
 
   void onEvent(PusherEvent event) {
@@ -126,12 +127,12 @@ class PusherRideController extends GetxController {
 
     if (ride != null) {
       printX('🚫 Ride canceled by $canceledBy: $cancelReason');
-      
+
       // Update ride status
       if (isRideDetailsPage()) {
         rideDetailsController.updateRide(ride);
       }
-      
+
       // Show notification to driver
       if (canceledBy == 'rider') {
         MyUtils.vibrate();
@@ -139,7 +140,7 @@ class PusherRideController extends GetxController {
           errorList: ['🚫 Ride Canceled', 'Rider canceled the ride: $cancelReason'],
         );
       }
-      
+
       // Navigate back to dashboard after short delay
       Future.delayed(const Duration(seconds: 3), () {
         if (Get.currentRoute == RouteHelper.rideDetailsScreen) {

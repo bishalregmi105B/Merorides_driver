@@ -24,7 +24,7 @@ class LoginController extends GetxController {
   String? password;
 
   List<String> errors = [];
-  bool remember = false;
+  bool remember = true; // Default to true for better UX
 
   void forgetPassword() {
     Get.toNamed(RouteHelper.forgotPasswordScreen);
@@ -54,9 +54,7 @@ class LoginController extends GetxController {
           tokenType: tokenType,
           isRemember: remember,
         );
-        if (remember) {
-          changeRememberMe();
-        }
+        // Do not toggle remember here - it invalidates the state we just saved!
       } else {
         CustomSnackBar.error(
           errorList: loginModel.message ?? [MyStrings.loginFailedTryAgain],

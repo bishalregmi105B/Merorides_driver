@@ -76,11 +76,12 @@ class PusherManager {
       return;
     }
 
-    for (int i = 0; i < 3; i++) {
+    int maxRetries = 10;
+    for (int i = 0; i < maxRetries; i++) {
       try {
-        printX("🔌 [DRIVER][$platform] Connecting... (${i + 1}/3)");
+        printX("🔌 [DRIVER][$platform] Connecting... (${i + 1}/$maxRetries)");
         await pusher.connect();
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(seconds: 3));
 
         if (isConnected()) {
           printX("✅ [DRIVER][$platform] Connected!");
@@ -92,10 +93,10 @@ class PusherManager {
         if (Platform.isIOS) {
           printE("🍎 iOS Connection Error - Check: Network, SSL, WebSocket support");
         }
-        if (i < 2) await Future.delayed(const Duration(seconds: 3));
+        if (i < maxRetries - 1) await Future.delayed(const Duration(seconds: 3));
       }
     }
-    printE("❌ [DRIVER][$platform] Connection failed after 3 attempts");
+    printE("❌ [DRIVER][$platform] Connection failed after $maxRetries attempts");
   }
 
   Future<void> _subscribe(String channelName) async {

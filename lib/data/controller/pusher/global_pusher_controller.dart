@@ -28,6 +28,7 @@ class GlobalPusherController extends GetxController {
     super.onInit();
 
     PusherManager().addListener(onEvent);
+    ensureConnection();
   }
 
   List<String> activeEventList = [
@@ -46,7 +47,8 @@ class GlobalPusherController extends GetxController {
       final eventName = event.eventName.toLowerCase();
 
       //Dashbaod New Ride Popup and Rides Management
-      if (eventName == "new_ride" && !isRideDetailsPage()) {
+      if (eventName == "new_ride") {
+        printX("🚖 Processing NEW_RIDE event. isRideDetailsPage: ${isRideDetailsPage()}");
         AudioUtils.playAudio(apiClient.getNotificationAudio());
         PusherResponseModel model = PusherResponseModel.fromJson(
           jsonDecode(event.data),
@@ -75,7 +77,7 @@ class GlobalPusherController extends GetxController {
         );
         dashBoardController.initialData(shouldLoad: false);
       }
-      
+
       //Package Ride Notification - Direct to driver (no bidding)
       if (eventName == "new_package_ride" && !isRideDetailsPage()) {
         AudioUtils.playAudio(apiClient.getNotificationAudio());
@@ -103,7 +105,7 @@ class GlobalPusherController extends GetxController {
         );
         dashBoardController.initialData(shouldLoad: false);
       }
-      
+
       //Reservation Ride Notification - Direct to driver (pre-assigned from reservation)
       if (eventName == "new_reservation_ride" && !isRideDetailsPage()) {
         printX('🎯 NEW_RESERVATION_RIDE event received');
@@ -127,7 +129,7 @@ class GlobalPusherController extends GetxController {
             currency: Get.find<ApiClient>().getCurrency(),
             currencySym: Get.find<ApiClient>().getCurrency(isSymbol: true),
             dashboardController: dashBoardController,
-            isReservationRide: true,  // Flag to identify reservation rides
+            isReservationRide: true, // Flag to identify reservation rides
           ),
         );
         dashBoardController.initialData(shouldLoad: false);
@@ -137,7 +139,7 @@ class GlobalPusherController extends GetxController {
         printX('🚫 BID_REJECT event received on channel: ${event.channelName}');
         printX('📱 Current route: ${Get.currentRoute}');
         printX('📄 Is on ride details page: ${isRideDetailsPage()}');
-        
+
         PusherResponseModel model = PusherResponseModel.fromJson(
           jsonDecode(event.data),
         );
@@ -146,10 +148,10 @@ class GlobalPusherController extends GetxController {
           channelName: event.channelName,
           data: model.data,
         );
-        
+
         // Handle bid rejection regardless of current page
         _handleBidRejection(pusherData);
-        
+
         // Refresh dashboard if not on ride details page
         if (!isRideDetailsPage()) {
           dashBoardController.initialData(shouldLoad: false);
@@ -182,14 +184,14 @@ class GlobalPusherController extends GetxController {
       final ride = pusherData.data?.ride;
       final bidAmount = pusherData.data?.bidAmount ?? '0';
       final reason = pusherData.data?.reason ?? 'No reason provided';
-      
+
       printX('💰 Bid amount: $bidAmount');
       printX('📝 Reason: $reason');
       printX('🚗 Ride: ${ride?.uid ?? "Unknown"}');
-      
+
       if (ride != null) {
         printX('🚫 Your bid was rejected for ride ${ride.uid}');
-        
+
         // Play notification sound
         try {
           AudioUtils.playAudio(apiClient.getNotificationAudio());
@@ -197,7 +199,7 @@ class GlobalPusherController extends GetxController {
         } catch (audioError) {
           printX('⚠️ Failed to play audio: $audioError');
         }
-        
+
         // Show notification to driver
         Get.snackbar(
           '🚫 Bid Rejected',
