@@ -40,7 +40,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>MeroRides Driver</string>
 	<key>CFBundleName</key>
-	<string>ovoridedriver</string>
+	<string>MeroRides Driver</string>
 
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
