@@ -68,6 +68,14 @@ class PusherManager {
     _isConnecting = false;
   }
 
+  // Continuous connection management
+  Future<void> ensureConnection() async {
+    if (isConnected() || _isConnecting) return;
+    if (_channelName.isEmpty) return;
+
+    _connect(_channelName);
+  }
+
   Future<void> _connect(String channelName) async {
     final platform = Platform.isIOS ? "iOS" : "Android";
 
@@ -76,16 +84,20 @@ class PusherManager {
       return;
     }
 
-    int maxRetries = 10;
-    for (int i = 0; i < maxRetries; i++) {
+    _isConnecting = true;
+    int retryCount = 0;
+    const int maxBackoffSeconds = 64; // Max wait time between retries
+
+    while (!isConnected() && _channelName.isNotEmpty) {
       try {
-        printX("🔌 [DRIVER][$platform] Connecting... (${i + 1}/$maxRetries)");
+        printX("🔌 [DRIVER][$platform] Connecting... (Attempt ${retryCount + 1})");
         await pusher.connect();
         await Future.delayed(const Duration(seconds: 3));
 
         if (isConnected()) {
           printX("✅ [DRIVER][$platform] Connected!");
           await _subscribe(channelName);
+          _isConnecting = false;
           return;
         }
       } catch (e) {
@@ -93,10 +105,19 @@ class PusherManager {
         if (Platform.isIOS) {
           printE("🍎 iOS Connection Error - Check: Network, SSL, WebSocket support");
         }
-        if (i < maxRetries - 1) await Future.delayed(const Duration(seconds: 3));
+      }
+
+      // Exponential backoff logic
+      int delaySeconds = (1 << retryCount).clamp(1, maxBackoffSeconds);
+      printX("⏳ [DRIVER][$platform] Retrying in $delaySeconds seconds...");
+      await Future.delayed(Duration(seconds: delaySeconds));
+
+      if (retryCount < 10) {
+        // Limit exponential growth but retry indefinitely
+        retryCount++;
       }
     }
-    printE("❌ [DRIVER][$platform] Connection failed after $maxRetries attempts");
+    _isConnecting = false;
   }
 
   Future<void> _subscribe(String channelName) async {

@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ovoride_driver/data/controller/common/theme_controller.dart';
+import 'package:ovoride_driver/data/controller/common/network_connectivity_controller.dart';
 import 'package:ovoride_driver/data/controller/localization/localization_controller.dart';
 import 'package:ovoride_driver/data/controller/splash/splash_controller.dart';
 import 'package:ovoride_driver/data/repo/auth/general_setting_repo.dart';
@@ -21,7 +22,8 @@ Future<Map<String, Map<String, String>>> init() async {
     () => SplashController(repo: Get.find(), localizationController: Get.find()),
   );
   Get.lazyPut(() => ThemeController(sharedPreferences: Get.find()));
-  
+  Get.lazyPut(() => NetworkConnectivityController());
+
   // Package
   Get.lazyPut(() => DriverPackageRepo(apiClient: Get.find()));
   Get.lazyPut(() => DriverPackageController(driverPackageRepo: Get.find()));
