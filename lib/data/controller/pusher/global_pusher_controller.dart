@@ -76,6 +76,16 @@ class GlobalPusherController extends GetxController {
           ),
         );
         dashBoardController.initialData(shouldLoad: false);
+
+        // 🔔 Show snackbar notification
+        Get.snackbar(
+          '🚖 New Ride Request',
+          'A new ride request is available nearby!',
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 4),
+          backgroundColor: Get.theme.colorScheme.primaryContainer,
+          colorText: Get.theme.colorScheme.onPrimaryContainer,
+        );
       }
 
       //Package Ride Notification - Direct to driver (no bidding)
@@ -104,6 +114,16 @@ class GlobalPusherController extends GetxController {
           ),
         );
         dashBoardController.initialData(shouldLoad: false);
+
+        // 🔔 Show snackbar notification
+        Get.snackbar(
+          '📦 New Package Ride',
+          'A package delivery request is available!',
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 4),
+          backgroundColor: Get.theme.colorScheme.primaryContainer,
+          colorText: Get.theme.colorScheme.onPrimaryContainer,
+        );
       }
 
       //Reservation Ride Notification - Direct to driver (pre-assigned from reservation)
@@ -133,6 +153,16 @@ class GlobalPusherController extends GetxController {
           ),
         );
         dashBoardController.initialData(shouldLoad: false);
+
+        // 🔔 Show snackbar notification
+        Get.snackbar(
+          '📅 New Reservation Ride',
+          'A reserved ride is ready to be picked up!',
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 4),
+          backgroundColor: Get.theme.colorScheme.primaryContainer,
+          colorText: Get.theme.colorScheme.onPrimaryContainer,
+        );
       }
       //Check Customer reject my bid
       if (eventName == "bid_reject") {
