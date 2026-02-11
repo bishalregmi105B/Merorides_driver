@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:ovoride_driver/core/route/route.dart';
 import 'package:ovoride_driver/core/utils/app_status.dart';
 import 'package:ovoride_driver/core/utils/dimensions.dart';
 import 'package:ovoride_driver/core/utils/my_animation.dart';
@@ -85,8 +86,12 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
             canPop: false,
             onPopInvokedWithResult: (bool didPop, d) async {
               if (didPop) return;
-              Get.back();
               toastification.dismissAll();
+              if (Navigator.canPop(context)) {
+                Get.back();
+              } else {
+                Get.offAllNamed(RouteHelper.dashboard);
+              }
             },
             child: Scaffold(
               body: Stack(
@@ -117,7 +122,10 @@ class _RideDetailsScreenState extends State<RideDetailsScreen> {
                             backgroundColor: MyColor.colorWhite,
                           ),
                           color: MyColor.colorBlack,
-                          onPressed: () => Get.back(result: true),
+                          onPressed: () {
+                            toastification.dismissAll();
+                            Get.offAllNamed(RouteHelper.dashboard);
+                          },
                           icon: const Icon(Icons.arrow_back_ios_new_rounded),
                         ),
                       ),
