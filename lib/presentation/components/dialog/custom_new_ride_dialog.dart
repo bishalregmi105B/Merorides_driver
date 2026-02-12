@@ -72,6 +72,16 @@ class CustomNewRideDialog {
           }
         },
         onAutoCompleteCompleted: (toastItem) {
+          // Timer expired — auto-reject the ride so server immediately notifies next driver
+          // This is the industry standard pattern (Uber/Ola/Grab)
+          printE("⏱️ Timer expired → Auto-rejecting ride ${ride.id}");
+          if (isPackageRide) {
+            dashboardController.rejectPackageRide(ride.id ?? '-1');
+          } else if (isReservationRide) {
+            dashboardController.rejectReservationRide(ride.id ?? '-1');
+          } else {
+            dashboardController.rejectRide(ride.id ?? '-1');
+          }
           // Dispose the controller for this specific ride
           if (_controllers.containsKey(ride.id)) {
             _controllers[ride.id]?.dispose();
@@ -79,7 +89,6 @@ class CustomNewRideDialog {
           }
           if (onDispose != null) {
             onDispose();
-            printE("onAutoCompleteCompleted Called");
           }
         },
       ),
@@ -151,8 +160,16 @@ class CustomNewRideDialog {
               _RidePopupTimer(
                 duration: Environment.bidAcceptSecond,
                 onTimeout: () {
+                  // Timer expired — auto-reject via the server for instant next-driver notification
+                  printE("⏱️ Timer ended → Auto-rejecting ride ${ride.id}");
+                  if (isPackageRide) {
+                    dashboardController.rejectPackageRide(ride.id ?? '-1');
+                  } else if (isReservationRide) {
+                    dashboardController.rejectReservationRide(ride.id ?? '-1');
+                  } else {
+                    dashboardController.rejectRide(ride.id ?? '-1');
+                  }
                   toastification.dismissById(holder.id);
-                  printE("Timer ended → Auto close called");
                 },
               ),
               GestureDetector(

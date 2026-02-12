@@ -91,9 +91,63 @@ class PusherRideController extends GetxController {
         _handleRideEnd(enventResponse);
         break;
 
+      case "reservation_cancelled":
+        _handleReservationCancelled(enventResponse);
+        break;
+
+      case "ride_completed":
+        _handleRideCompleted(enventResponse);
+        break;
+
       default:
         updateEvent(enventResponse);
         break;
+    }
+  }
+
+  void _handleReservationCancelled(PusherResponseModel enventResponse) {
+    if (enventResponse.data != null) {
+      final reason = enventResponse.data?.cancelReason ?? 'No reason provided';
+      final canceledBy = enventResponse.data?.canceledBy ?? 'rider';
+
+      AudioUtils.playAudio(apiClient.getNotificationAudio());
+      if (apiClient.isNotificationAudioEnable()) {
+        MyUtils.vibrate();
+      }
+
+      Get.snackbar(
+        '🚫 Reservation Cancelled',
+        'Reservation cancelled by $canceledBy\nReason: $reason',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Get.theme.colorScheme.error,
+        colorText: Get.theme.colorScheme.onError,
+        duration: const Duration(seconds: 5),
+      );
+
+      // Refresh home/dashboard if needed or just let user know
+    }
+  }
+
+  void _handleRideCompleted(PusherResponseModel enventResponse) {
+    if (enventResponse.data != null) {
+      AudioUtils.playAudio(apiClient.getNotificationAudio());
+      if (apiClient.isNotificationAudioEnable()) {
+        MyUtils.vibrate();
+      }
+
+      Get.snackbar(
+        '✅ Ride Completed',
+        'Ride completed successfully!',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Get.theme.colorScheme.primaryContainer,
+        colorText: Get.theme.colorScheme.onPrimaryContainer,
+        duration: const Duration(seconds: 4),
+      );
+
+      // Navigate to home or summary if appropriate
+      if (isRideDetailsPage()) {
+        Get.offAllNamed(RouteHelper.dashboard);
+      }
     }
   }
 

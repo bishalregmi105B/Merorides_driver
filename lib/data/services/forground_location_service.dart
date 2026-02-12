@@ -34,7 +34,7 @@ class ForgroundLocationService extends TaskHandler {
           printX("Is online -> $isOnline | isLoggedIn -> $isLoggedIn");
           if (isOnline && isLoggedIn) {
             FlutterForegroundTask.updateService(
-              notificationText: "Current Location: $lat , $lat",
+              notificationText: "Tracking your location",
             );
             await sendLocationToServer(lat: lat, long: lon);
             // FlutterForegroundTask.updateService(notificationText: "Refreshing location....");
@@ -63,7 +63,7 @@ class ForgroundLocationService extends TaskHandler {
       );
       if (response.statusCode == 200) {
         FlutterForegroundTask.updateService(
-          notificationText: "Data synced successfully",
+          notificationText: "Location updated",
         );
       }
     } catch (e) {

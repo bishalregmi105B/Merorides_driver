@@ -368,6 +368,37 @@ class BackgroundPusherService {
         channelId = _criticalChannelId;
         break;
 
+      case 'reservation_cancelled':
+        // Reservation data might be in ride field or distinct
+        // Note: model.data structure for reservation might need verification, usually it's mapped to ride model
+        // In EventData class, we have canceledBy and cancelReason
+        final canceledBy = model.data?.canceledBy ?? 'rider';
+        final reason = model.data?.cancelReason ?? 'No reason provided';
+
+        title = '🚫 Reservation Cancelled';
+        body = 'Reservation cancelled by $canceledBy\nReason: $reason';
+        channelId = _criticalChannelId;
+        payload = jsonEncode({
+          'event': 'reservation_cancelled',
+          'ride_id': model.data?.rideId ?? model.data?.ride?.id,
+        });
+        break;
+
+      case 'ride_completed':
+        final ride = model.data?.ride;
+        title = '✅ Ride Completed';
+        if (ride != null) {
+          body = 'Ride #${ride.uid} has been marked as completed.';
+          payload = jsonEncode({
+            'event': 'ride_completed',
+            'ride_id': ride.id,
+          });
+        } else {
+          body = 'Ride has been completed successfully.';
+        }
+        channelId = _generalChannelId;
+        break;
+
       case 'message_received':
         final message = model.data?.message;
         title = '💬 New Message';

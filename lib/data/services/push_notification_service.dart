@@ -12,6 +12,7 @@ import '../../core/utils/method.dart';
 import '../../core/utils/url_container.dart';
 import '../../firebase_options.dart';
 import 'api_client.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:get/get.dart' as getx;
 
 Future<void> _messageHandler(RemoteMessage message) async {
@@ -163,7 +164,21 @@ class PushNotificationService {
         importance: Importance.high,
       );
 
+  Future<void> requestPermissions() async {
+    // Check Status
+    PermissionStatus status = await Permission.notification.status;
+
+    if (status.isDenied) {
+      // Request permission
+      await Permission.notification.request();
+    } else if (status.isPermanentlyDenied) {
+      // Open settings if permanently denied (optional, based on UX)
+      // await openAppSettings();
+    }
+  }
+
   Future<void> _requestPermissions() async {
+    // We keep existing logic for safe measure or specific platform tweaks
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     if (Platform.isIOS || Platform.isMacOS) {
@@ -173,6 +188,9 @@ class PushNotificationService {
       final AndroidFlutterLocalNotificationsPlugin? androidImplementation = flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
       await androidImplementation?.requestNotificationsPermission();
     }
+
+    // Also use permission_handler for robust check
+    await requestPermissions();
   }
 
   // Function to save the image locally

@@ -9,6 +9,7 @@ import 'package:ovoride_driver/data/repo/splash/splash_repo.dart';
 import 'package:ovoride_driver/data/services/api_client.dart';
 import 'package:ovoride_driver/data/repo/package/driver_package_repo.dart';
 import 'package:ovoride_driver/data/controller/package/driver_package_controller.dart';
+import 'package:ovoride_driver/data/services/push_notification_service.dart';
 
 Future<Map<String, Map<String, String>>> init() async {
   final sharedPreferences = await SharedPreferences.getInstance();
@@ -18,8 +19,13 @@ Future<Map<String, Map<String, String>>> init() async {
   Get.lazyPut(() => GeneralSettingRepo(apiClient: Get.find()));
   Get.lazyPut(() => SplashRepo(apiClient: Get.find()));
   Get.lazyPut(() => LocalizationController(sharedPreferences: Get.find()));
+  Get.lazyPut(() => PushNotificationService(apiClient: Get.find()));
   Get.lazyPut(
-    () => SplashController(repo: Get.find(), localizationController: Get.find()),
+    () => SplashController(
+      repo: Get.find(),
+      localizationController: Get.find(),
+      pushNotificationService: Get.find(),
+    ),
   );
   Get.lazyPut(() => ThemeController(sharedPreferences: Get.find()));
   Get.lazyPut(() => NetworkConnectivityController());

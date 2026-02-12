@@ -15,14 +15,21 @@ import 'package:ovoride_driver/data/repo/auth/general_setting_repo.dart';
 import 'package:ovoride_driver/presentation/components/snack_bar/show_custom_snackbar.dart';
 
 import '../../model/authorization/authorization_response_model.dart';
+import '../../services/push_notification_service.dart';
 
 class SplashController extends GetxController {
   GeneralSettingRepo repo;
   LocalizationController localizationController;
-  SplashController({required this.repo, required this.localizationController});
+  PushNotificationService pushNotificationService;
+  SplashController({
+    required this.repo,
+    required this.localizationController,
+    required this.pushNotificationService,
+  });
 
   bool isLoading = true;
   Future<void> gotoNextPage() async {
+    await pushNotificationService.requestPermissions();
     await loadLanguage();
     bool isRemember = repo.apiClient.sharedPreferences.getBool(
           SharedPreferenceHelper.rememberMeKey,

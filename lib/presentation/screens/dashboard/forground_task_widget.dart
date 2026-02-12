@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart' hide NotificationVisibility;
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:ovoride_driver/core/helper/string_format_helper.dart';
@@ -102,11 +103,19 @@ class ForGroundTaskWidgetState extends State<ForGroundTaskWidget> with WidgetsBi
       }
     }
     try {
+      // Request notification permission for Android 13+ BEFORE starting foreground service
+      if (Platform.isAndroid) {
+        final androidPlugin = FlutterLocalNotificationsPlugin().resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+        if (androidPlugin != null) {
+          await androidPlugin.requestNotificationsPermission();
+        }
+      }
+
       await FlutterForegroundTask.startService(
         serviceTypes: [ForegroundServiceTypes.dataSync],
         serviceId: 256,
         notificationTitle: "${Environment.appName} is running",
-        notificationText: "Do not close the app",
+        notificationText: "Tracking your location",
         callback: widget.callback!,
         notificationIcon: const NotificationIcon(
           metaDataName: 'service.NOTIFICATION_ICON',
