@@ -258,16 +258,10 @@ class BackgroundPusherService {
             timeoutAfter: 30000, // 30 seconds
             actions: [
               AndroidNotificationAction(
-                'accept',
-                'Accept',
-                titleColor: Colors.green,
+                'check_request',
+                'Check Request',
+                titleColor: Colors.blue,
                 showsUserInterface: true,
-              ),
-              AndroidNotificationAction(
-                'reject',
-                'Reject',
-                titleColor: Colors.red,
-                cancelNotification: true,
               ),
             ],
           ),
