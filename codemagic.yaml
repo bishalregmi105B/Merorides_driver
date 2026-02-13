@@ -61,9 +61,6 @@ workflows:
         XCODE_PROJECT: "ios/Runner.xcodeproj"
       flutter: stable
       xcode: latest
-      ios_signing:
-        distribution_type: ad_hoc
-        bundle_identifier: com.lamasparsha.merodriver
     triggering:
       events:
         - push
@@ -82,17 +79,11 @@ workflows:
       - name: Install pods
         script: |
           cd ios && pod install --repo-update && cd ..
-      - name: Set up code signing
+      - name: Build iOS Simulator App
         script: |
-          xcode-project use-profiles
-      - name: Build IPA for real device
-        script: |
-          flutter build ipa \
-            --release \
-            --build-number=$(($(date +%s) / 60)) \
-            --export-options-plist=/Users/builder/export_options.plist
+          flutter build ios --debug --simulator
     artifacts:
-      - build/ios/ipa/*.ipa
+      - build/ios/iphonesimulator/Runner.app
     publishing:
       slack:
         channel: '#builds'
@@ -113,9 +104,6 @@ workflows:
         JAVA_TOOL_OPTIONS: "-Xmx3072m"
       flutter: stable
       xcode: latest
-      ios_signing:
-        distribution_type: ad_hoc
-        bundle_identifier: com.lamasparsha.merodriver
     triggering:
       events:
         - push
@@ -146,19 +134,13 @@ workflows:
       - name: Install iOS pods
         script: |
           cd ios && pod install --repo-update && cd ..
-      - name: Set up iOS code signing
+      - name: Build iOS Simulator App
         script: |
-          xcode-project use-profiles
-      - name: Build IPA for real device
-        script: |
-          flutter build ipa \
-            --release \
-            --build-number=$(($(date +%s) / 60)) \
-            --export-options-plist=/Users/builder/export_options.plist
+          flutter build ios --debug --simulator
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/bundle/release/app-release.aab
-      - build/ios/ipa/*.ipa
+      - build/ios/iphonesimulator/Runner.app
     publishing:
       slack:
         channel: '#builds'
