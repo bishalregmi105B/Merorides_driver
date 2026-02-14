@@ -82,6 +82,7 @@ flutter:
     - assets/images/logo/splash_screen.jpg
     - assets/images/onboard/
     - assets/images/social/
+    - assets/images/map/
     - assets/icon/
     - assets/animation/
   fonts:
