@@ -360,21 +360,16 @@ class CustomNewRideDialog {
                           // Reject reservation ride
                           await dashboardController.rejectReservationRide(
                             ride.id ?? '-1',
-                            onAction: () {
-                              onCancel();
-                              toastification.dismissById(holder.id);
-                            },
                           );
                         } else {
                           // Reject regular ride - triggers next driver in sequential queue
                           await dashboardController.rejectRide(
                             ride.id ?? '-1',
-                            onAction: () {
-                              onCancel();
-                              toastification.dismissById(holder.id);
-                            },
                           );
                         }
+                        // Always dismiss toast and clean up after reject/cancel (success or error)
+                        onCancel();
+                        toastification.dismissById(holder.id);
                       },
                       bgColor: MyColor.getPrimaryColor().withValues(alpha: 0.1),
                       textColor: MyColor.getPrimaryColor(),
@@ -398,16 +393,10 @@ class CustomNewRideDialog {
                             await dashboardController.acceptPackageRide(
                               ride.id ?? '-1',
                             );
-                            onBidClick();
-                            toastification.dismissById(holder.id);
                           } else if (isReservationRide) {
                             // Accept reservation ride
                             await dashboardController.acceptReservationRide(
                               ride.id ?? '-1',
-                              onAction: () {
-                                onBidClick();
-                                toastification.dismissById(holder.id);
-                              },
                             );
                           } else {
                             // Regular bid logic
@@ -425,10 +414,6 @@ class CustomNewRideDialog {
                               await dashboardController.sendBid(
                                 ride.id ?? '-1',
                                 amount: enterValue.toString(),
-                                onActon: () {
-                                  onBidClick();
-                                  toastification.dismissById(holder.id);
-                                },
                               );
                             } else {
                               CustomSnackBar.error(
@@ -438,8 +423,12 @@ class CustomNewRideDialog {
                                 ],
                                 dismissAll: false,
                               );
+                              return; // Don't dismiss - let user fix the amount
                             }
                           }
+                          // Always dismiss toast after API call (success or error)
+                          onBidClick();
+                          toastification.dismissById(holder.id);
                         },
                         isColorChange: true,
                       ),
