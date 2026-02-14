@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -18,7 +19,6 @@ import 'package:ovoride_driver/environment.dart';
 import 'package:ovoride_driver/presentation/components/dialog/global_popup_dialog.dart';
 import 'package:ovoride_driver/presentation/components/snack_bar/show_custom_snackbar.dart';
 import 'package:ovoride_driver/presentation/screens/dashboard/forground_task_widget.dart';
-
 
 import '../../../core/utils/url_container.dart';
 
@@ -62,10 +62,10 @@ class DashBoardController extends GetxController {
     bidAmountController.text = '';
     currency = repo.apiClient.getCurrency();
     currencySym = repo.apiClient.getCurrency(isSymbol: true);
-    
+
     // Reset popup flag so it can show again on each load
     hasShownPopup = false;
-    
+
     generalSettingResponseModel = repo.apiClient.getGeneralSettings();
     update();
     await Future.wait([fetchLocation(), loadData(shouldLoad: shouldLoad)]);
@@ -93,9 +93,39 @@ class DashBoardController extends GetxController {
   Future<void> getCurrentLocationAddress() async {
     try {
       final GeolocatorPlatform geolocator = GeolocatorPlatform.instance;
+
+      // Check if location services are enabled
+      bool serviceEnabled = await geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        printX("⚠️ Location services are disabled");
+        currentAddress = 'Location services disabled';
+        update();
+        return;
+      }
+
+      // Check permission status
+      LocationPermission permission = await geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          printX("⚠️ Location permission denied");
+          currentAddress = 'Location permission denied';
+          update();
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        printX("⚠️ Location permission permanently denied");
+        currentAddress = 'Location permission denied';
+        update();
+        return;
+      }
+
       currentPosition = await geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.best,
+          timeLimit: Duration(seconds: 15),
         ),
       );
 
@@ -113,11 +143,27 @@ class DashBoardController extends GetxController {
         }
       }
       update();
+    } on TimeoutException catch (_) {
+      printX("⚠️ Location request timed out, retrying with lower accuracy...");
+      try {
+        final GeolocatorPlatform geolocator = GeolocatorPlatform.instance;
+        currentPosition = await geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.low,
+            timeLimit: Duration(seconds: 10),
+          ),
+        );
+        if (currentPosition != null) {
+          currentAddress = 'Approximate location';
+        }
+        update();
+      } catch (e2) {
+        printX("Error on fallback location: $e2");
+      }
     } catch (e) {
-      printX("Error: $e");
-      CustomSnackBar.error(
-        errorList: [MyStrings.somethingWentWrongWhileTakingLocation],
-      );
+      printX("Error getting location: $e");
+      // Don't show error snackbar for location — it's non-critical
+      // The driver can still use the app without reverse-geocoded address
     }
   }
 
@@ -213,24 +259,24 @@ class DashBoardController extends GetxController {
   }
 
   List<dynamic> packageRidesList = [];
-  
+
   Future<void> loadPackageRides() async {
     try {
       ResponseModel responseModel = await repo.getPackageRides();
-      
+
       if (responseModel.statusCode == 200) {
         var responseData = responseModel.responseJson;
-        
+
         if (responseData['status'] == 'success') {
           if (page == 1) {
             packageRidesList.clear();
           }
           packageRidesList = responseData['data']?['package_rides'] ?? [];
           userImagePath = '${UrlContainer.domainUrl}/${responseData['data']?['user_image_path'] ?? ''}';
-          
+
           // No pagination for package rides
           nextPageUrl = null;
-          
+
           update();
         } else {
           CustomSnackBar.error(
@@ -277,7 +323,7 @@ class DashBoardController extends GetxController {
             onActon();
           }
           initialData(shouldLoad: false);
-          
+
           // Check if it's a scheduled pre-bid ride
           if (ride != null && ride.isScheduled == 'true' && ride.notificationSent == 'false') {
             // For pre-bid: show toast instead of navigating
@@ -345,12 +391,11 @@ class DashBoardController extends GetxController {
             successList: model.message ?? [MyStrings.somethingWentWrong],
             dismissAll: false,
           );
-          
+
           // Extract ride data from response
-          if (responseModel.responseJson['data'] != null && 
-              responseModel.responseJson['data']['ride'] != null) {
+          if (responseModel.responseJson['data'] != null && responseModel.responseJson['data']['ride'] != null) {
             var rideData = responseModel.responseJson['data']['ride'];
-            
+
             // Navigate to ride details screen with ride object
             Get.toNamed(RouteHelper.rideDetailsScreen, arguments: rideData)?.then((v) {
               initialData(shouldLoad: false);
@@ -445,7 +490,7 @@ class DashBoardController extends GetxController {
             successList: model.message ?? [MyStrings.somethingWentWrong],
             dismissAll: false,
           );
-          
+
           // Don't navigate - driver is already on ride screen from NEW_RESERVATION_RIDE Pusher event
           // Just refresh data to update ride status from PENDING to ACTIVE
           initialData(shouldLoad: false);
@@ -618,15 +663,11 @@ class DashBoardController extends GetxController {
     if (hasShownPopup) {
       return;
     }
-    
+
     final popupModalValue = generalSettingResponseModel.data?.generalSetting?.popupModal;
-    final popupEnabled = popupModalValue == '1' || 
-                        popupModalValue == 'true' || 
-                        popupModalValue == 1 || 
-                        popupModalValue == true ||
-                        popupModalValue == 'True';
+    final popupEnabled = popupModalValue == '1' || popupModalValue == 'true' || popupModalValue == 1 || popupModalValue == true || popupModalValue == 'True';
     final popup = generalSettingResponseModel.data?.generalSetting?.popupSettings;
-    
+
     if (!popupEnabled || popup == null) {
       return;
     }
@@ -647,7 +688,7 @@ class DashBoardController extends GetxController {
     }
 
     hasShownPopup = true;
-    
+
     // Use a delay to ensure the UI is fully rendered
     Future.delayed(const Duration(milliseconds: 1200), () {
       if (Get.context != null) {

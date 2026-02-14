@@ -47,7 +47,7 @@ class GlobalPusherController extends GetxController {
       final eventName = event.eventName.toLowerCase();
 
       //Dashbaod New Ride Popup and Rides Management
-      if (eventName == "new_ride") {
+      if (eventName == "new_ride" && !isRideDetailsPage()) {
         printX("🚖 Processing NEW_RIDE event. isRideDetailsPage: ${isRideDetailsPage()}");
         AudioUtils.playAudio(apiClient.getNotificationAudio());
         PusherResponseModel model = PusherResponseModel.fromJson(

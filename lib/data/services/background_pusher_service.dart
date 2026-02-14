@@ -190,10 +190,14 @@ class BackgroundPusherService {
       final appState = WidgetsBinding.instance.lifecycleState;
       final isBackground = appState == null || appState != AppLifecycleState.resumed;
 
-      // Always show system notification for all events
-      // This ensures the driver sees notifications whether app is foreground or background
-      printX('📱 App state: $appState (isBackground: $isBackground) — showing notification');
-      _showNotificationForEvent(eventName, model);
+      // Only show system notification when app is in background
+      // In foreground, GlobalPusherController handles the UI (popup/snackbar)
+      if (isBackground) {
+        printX('📱 App in background — showing system notification');
+        _showNotificationForEvent(eventName, model);
+      } else {
+        printX('📱 App in foreground — skipping system notification (handled by GlobalPusherController)');
+      }
 
       // Handle critical events that need immediate attention (bring app to foreground)
       if (isBackground && _isCriticalEvent(eventName)) {
@@ -521,9 +525,15 @@ class BackgroundPusherService {
         final rideId = data['ride_id'] as String?;
 
         if (rideId != null) {
-          // For new ride notifications, we need to fetch the ride data first
-          // Since we only have the ride ID, navigate to ride details screen
-          // which will fetch the complete ride data
+          // Close any existing ride dialogs/overlays to prevent duplicates
+          if (Get.isDialogOpen == true) {
+            Get.back();
+          }
+          if (Get.isSnackbarOpen) {
+            Get.closeAllSnackbars();
+          }
+
+          // Navigate to ride details screen
           Get.toNamed(RouteHelper.rideDetailsScreen, arguments: rideId);
         }
       } catch (e) {
