@@ -1,9 +1,11 @@
 workflows:
   android-workflow:
     name: Android Workflow
-    instance_type: mac_mini_m2
+    instance_type: mac_mini_m1
     max_build_duration: 120
     environment:
+      android_signing:
+        - ovoride_driver_key
       vars:
         PACKAGE_NAME: "com.lamasparsha.merodriver"
         GRADLE_OPTS: "-Xmx3072m"
@@ -42,6 +44,12 @@ workflows:
       - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/bundle/release/app-release.aab
     publishing:
+      email:
+        recipients:
+          - $PERSONAL_EMAIL
+        notify:
+          success: true
+          failure: true
       slack:
         channel: '#builds'
         notify_on_build_start: true
@@ -51,9 +59,12 @@ workflows:
 
   ios-workflow:
     name: iOS Workflow
-    instance_type: mac_mini_m2
+    instance_type: mac_mini_m1
     max_build_duration: 120
     environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.lamasparsha.merodriver
       vars:
         BUNDLE_ID: "com.lamasparsha.merodriver"
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
@@ -79,12 +90,32 @@ workflows:
       - name: Install pods
         script: |
           cd ios && pod install --repo-update && cd ..
-      - name: Build iOS Simulator App
+      - name: Build iOS app
         script: |
-          flutter build ios --debug --simulator
+          flutter build ios \
+            --release \
+            --no-codesign
+      - name: Package for App Store
+        script: |
+          cd ios
+          xcodebuild \
+            -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -derivedDataPath build/ios_build \
+            -allowProvisioningUpdates \
+            build-for-testing
+          cd ..
     artifacts:
-      - build/ios/iphonesimulator/Runner.app
+      - build/ios/iphoneos/Runner.app
+      - ios/build/ios_build/**/*.ipa
     publishing:
+      email:
+        recipients:
+          - $PERSONAL_EMAIL
+        notify:
+          success: true
+          failure: true
       slack:
         channel: '#builds'
         notify_on_build_start: true
@@ -94,9 +125,14 @@ workflows:
 
   full-workflow:
     name: Full Build (Android + iOS)
-    instance_type: mac_mini_m2
-    max_build_duration: 120
+    instance_type: mac_mini_m1
+    max_build_duration: 180
     environment:
+      android_signing:
+        - ovoride_driver_key
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.lamasparsha.merodriver
       vars:
         PACKAGE_NAME: "com.lamasparsha.merodriver"
         BUNDLE_ID: "com.lamasparsha.merodriver"
@@ -134,14 +170,22 @@ workflows:
       - name: Install iOS pods
         script: |
           cd ios && pod install --repo-update && cd ..
-      - name: Build iOS Simulator App
+      - name: Build iOS app
         script: |
-          flutter build ios --debug --simulator
+          flutter build ios \
+            --release \
+            --no-codesign
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/bundle/release/app-release.aab
-      - build/ios/iphonesimulator/Runner.app
+      - build/ios/iphoneos/Runner.app
     publishing:
+      email:
+        recipients:
+          - $PERSONAL_EMAIL
+        notify:
+          success: true
+          failure: true
       slack:
         channel: '#builds'
         notify_on_build_start: true

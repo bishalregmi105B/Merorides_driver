@@ -25,6 +25,7 @@ class RideDetailsController extends GetxController {
   RideModel ride = RideModel(id: '-1');
 
   bool isCashPaymentRequest = false;
+  bool _isPaymentDialogShowing = false;
 
   void updateRide(RideModel newRide) {
     ride = newRide;
@@ -156,14 +157,14 @@ class RideDetailsController extends GetxController {
       ResponseModel responseModel = await repo.acceptReservationRide(rideId: ride.id ?? '-1');
       printX('📦 Response status code: ${responseModel.statusCode}');
       printX('📦 Response: ${responseModel.responseJson}');
-      
+
       if (responseModel.statusCode == 200) {
         AuthorizationResponseModel model = AuthorizationResponseModel.fromJson(
           (responseModel.responseJson),
         );
         printX('✅ Model status: ${model.status}');
         printX('✅ Model message: ${model.message}');
-        
+
         if (model.status?.toLowerCase() == 'success') {
           // Refresh ride details to show updated status
           await getRideDetails(ride.id ?? '-1', shouldLoading: false);
@@ -235,7 +236,6 @@ class RideDetailsController extends GetxController {
         );
         if (model.status == MyStrings.success) {
           getRideDetails(rideId, shouldLoading: false);
-          Get.back();
           CustomSnackBar.success(
             successList: model.message ?? [MyStrings.success],
           );
@@ -249,9 +249,12 @@ class RideDetailsController extends GetxController {
       }
     } catch (e) {
       printX(e);
+    } finally {
+      isCancelBtnLoading = false;
+      update();
+      // Always close the bottom sheet/dialog regardless of result
+      Get.back();
     }
-    isCancelBtnLoading = false;
-    update();
   }
 
   bool isAcceptPaymentBtnLoading = false;
@@ -284,10 +287,15 @@ class RideDetailsController extends GetxController {
       }
     } catch (e) {
       printX(e);
+      CustomSnackBar.error(errorList: [MyStrings.somethingWentWrong]);
     } finally {
-      Get.back();
       isAcceptPaymentBtnLoading = false;
+      _isPaymentDialogShowing = false;
       update();
+      // Close the dialog — use Navigator.pop on the dialog's own context for reliability
+      if (Navigator.of(context, rootNavigator: true).canPop()) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
     }
   }
 
@@ -341,13 +349,19 @@ class RideDetailsController extends GetxController {
   }
 
   void onShowPaymentDialog(BuildContext context) {
+    // Prevent multiple stacked dialogs from duplicate Pusher events or initial load + Pusher race
+    if (_isPaymentDialogShowing) return;
+    _isPaymentDialogShowing = true;
     showDialog(
       barrierDismissible: false,
       context: context,
       builder: (context) {
         return PaymentReceiveDialog();
       },
-    );
+    ).then((_) {
+      // Reset flag when dialog is dismissed by any means
+      _isPaymentDialogShowing = false;
+    });
   }
 
   void changeCashPaymentRequest(bool value) {
