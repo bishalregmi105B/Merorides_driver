@@ -209,7 +209,11 @@ class _RideMessageScreenState extends State<RideMessageScreen> {
             appBar: CustomAppBar(
               title: riderName,
               backBtnPress: () {
-                Get.back();
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                } else {
+                  Get.back();
+                }
               },
               actionsWidget: [
                 IconButton(

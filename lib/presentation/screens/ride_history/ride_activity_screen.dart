@@ -71,7 +71,11 @@ class _RideActivityScreenState extends State<RideActivityScreen> with SingleTick
               widget.onBackPress?.call();
             }
           } else {
-            Get.back();
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Get.back();
+            }
           }
         },
       ),
