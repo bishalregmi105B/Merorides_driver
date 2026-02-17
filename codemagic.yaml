@@ -54,9 +54,6 @@ workflows:
     integrations:
       app_store_connect: Codemagic
     environment:
-      ios_signing:
-        provisioning_profiles:
-          - mero_rides_driver_appstore
       vars:
         BUNDLE_ID: "com.lamasparsha.merodriver"
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
@@ -79,8 +76,15 @@ workflows:
       - name: Install pods
         script: |
           cd ios && pod install --repo-update && cd ..
+      - name: Fetch signing files
+        script: |
+          app-store-connect fetch-signing-files "com.lamasparsha.merodriver" \
+            --type IOS_APP_STORE \
+            --create
       - name: Set up code signing
         script: |
+          keychain initialize
+          keychain add-certificates
           xcode-project use-profiles
       - name: Build iOS release
         script: |
@@ -109,9 +113,6 @@ workflows:
     integrations:
       app_store_connect: Codemagic
     environment:
-      ios_signing:
-        provisioning_profiles:
-          - mero_rides_driver_appstore
       vars:
         PACKAGE_NAME: "com.lamasparsha.merodriver"
         BUNDLE_ID: "com.lamasparsha.merodriver"
@@ -148,8 +149,15 @@ workflows:
       - name: Install iOS pods
         script: |
           cd ios && pod install --repo-update && cd ..
+      - name: Fetch signing files
+        script: |
+          app-store-connect fetch-signing-files "com.lamasparsha.merodriver" \
+            --type IOS_APP_STORE \
+            --create
       - name: Set up code signing
         script: |
+          keychain initialize
+          keychain add-certificates
           xcode-project use-profiles
       - name: Build iOS release
         script: |
