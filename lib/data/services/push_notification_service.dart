@@ -50,6 +50,18 @@ class PushNotificationService {
     });
 
     await enableIOSNotifications();
+
+    // Explicitly handle APNs token for iOS to ensure FCM token generation
+    if (Platform.isIOS) {
+      String? apnsToken = await messaging.getAPNSToken();
+      if (apnsToken == null) {
+        // Wait a bit for APNs token if not immediately available
+        await Future.delayed(const Duration(seconds: 3));
+        apnsToken = await messaging.getAPNSToken();
+      }
+      printX('APNS Token: $apnsToken');
+    }
+
     await registerNotificationListeners();
   }
 
@@ -178,6 +190,25 @@ class PushNotificationService {
   }
 
   Future<void> _requestPermissions() async {
+    // Explicitly request permission from Firebase Messaging for APNs registration
+    NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+      print('User granted provisional permission');
+    } else {
+      print('User declined or has not accepted permission');
+    }
+
     // We keep existing logic for safe measure or specific platform tweaks
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
