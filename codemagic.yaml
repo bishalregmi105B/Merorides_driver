@@ -96,8 +96,12 @@ workflows:
             --release \
             --build-number=$(($(date +%s) / 60)) \
             --export-options-plist=/Users/builder/export_options.plist
+      - name: Build iOS Simulator App
+        script: |
+          flutter build ios --debug --simulator
     artifacts:
       - build/ios/ipa/*.ipa
+      - build/ios/iphonesimulator/Runner.app
     publishing:
       app_store_connect:
         auth: integration
@@ -173,10 +177,14 @@ workflows:
             --release \
             --build-number=$(($(date +%s) / 60)) \
             --export-options-plist=/Users/builder/export_options.plist
+      - name: Build iOS Simulator App
+        script: |
+          flutter build ios --debug --simulator
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/bundle/release/app-release.aab
       - build/ios/ipa/*.ipa
+      - build/ios/iphonesimulator/Runner.app
     publishing:
       app_store_connect:
         auth: integration
