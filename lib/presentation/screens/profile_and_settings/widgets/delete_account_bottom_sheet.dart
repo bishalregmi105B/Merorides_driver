@@ -30,7 +30,7 @@ class _DeleteAccountBottomSheetBodyState extends State<DeleteAccountBottomSheetB
                     alignment: Alignment.topRight,
                     child: IconButton(
                       onPressed: () {
-                        Get.back();
+                        Navigator.pop(context);
                       },
                       icon: Icon(
                         Icons.clear,
@@ -102,7 +102,7 @@ class _DeleteAccountBottomSheetBodyState extends State<DeleteAccountBottomSheetB
                   const SizedBox(height: Dimensions.space10),
                   GestureDetector(
                     onTap: () {
-                      Get.back();
+                      Navigator.pop(context);
                     },
                     child: Container(
                       width: context.width,

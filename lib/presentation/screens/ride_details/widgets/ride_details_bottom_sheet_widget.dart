@@ -98,7 +98,7 @@ class RideDetailsBottomSheetWidget extends StatelessWidget {
 
                   //OLD CODE
                   const SizedBox(height: Dimensions.space20),
-                  
+
                   // Accept/Reject buttons for PENDING reservation rides
                   if (controller.ride.status == AppStatus.RIDE_PENDING && controller.ride.isReservation == '1') ...[
                     RoundedButton(
@@ -109,7 +109,7 @@ class RideDetailsBottomSheetWidget extends StatelessWidget {
                           title: MyStrings.pleaseConfirm,
                           description: MyStrings.confirmAcceptReservation,
                           onTap: () async {
-                            Get.back(); // Close dialog
+                            Navigator.pop(context); // Close dialog
                             await controller.acceptReservationRide();
                           },
                         );
@@ -129,7 +129,7 @@ class RideDetailsBottomSheetWidget extends StatelessWidget {
                     ),
                     spaceDown(Dimensions.space20),
                   ],
-                  
+
                   if (controller.ride.status == AppStatus.RIDE_COMPLETED) ...[
                     if (controller.ride.userReview == null) ...[
                       RoundedButton(
@@ -220,8 +220,7 @@ class RideDetailsBottomSheetWidget extends StatelessWidget {
                       isLoading: controller.isEndBtnLoading,
                     ),
                   ],
-                  if (controller.ride.status == AppStatus.RIDE_PAYMENT_REQUESTED && 
-                      Get.find<ApiClient>().isPaymentSystemEnabled()) ...[
+                  if (controller.ride.status == AppStatus.RIDE_PAYMENT_REQUESTED && Get.find<ApiClient>().isPaymentSystemEnabled()) ...[
                     RideDetailsPaymentSection(),
                     const SizedBox(height: Dimensions.space25),
                   ],

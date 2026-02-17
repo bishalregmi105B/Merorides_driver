@@ -100,7 +100,7 @@ class AppDialog {
                                   child: RoundedButton(
                                     text: MyStrings.confirm.tr,
                                     press: () {
-                                      Get.back();
+                                      Navigator.pop(context);
                                       onTap();
                                     },
                                   ),

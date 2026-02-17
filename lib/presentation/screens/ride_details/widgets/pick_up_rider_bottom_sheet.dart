@@ -63,7 +63,7 @@ class PickUpRiderBottomSheet extends StatelessWidget {
                         fontSize: Dimensions.fontLarge,
                       ),
                       press: () {
-                        Get.back();
+                        Navigator.pop(context);
                         if (controller.otpController.text.isNotEmpty) {
                           controller.startRide(ride.id ?? '-1');
                         } else if (controller.otpController.text.length != 6) {

@@ -72,7 +72,7 @@ class WithdrawMethodListBottomSheet extends StatelessWidget {
                             onChanged: (val) {
                               if (method.id != -1) {
                                 controller.setWithdrawMethod(method);
-                                Get.back();
+                                Navigator.pop(context);
                               }
                             },
                             checkboxShape: RoundedRectangleBorder(

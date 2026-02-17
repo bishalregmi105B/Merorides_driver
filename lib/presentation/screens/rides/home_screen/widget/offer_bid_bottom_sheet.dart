@@ -187,7 +187,7 @@ class _OfferBidBottomSheetState extends State<OfferBidBottomSheet> {
                           amount: enterValue.toString(),
                           ride: widget.ride,
                           onActon: () {
-                            Get.back();
+                            Navigator.pop(context);
                           },
                         );
                       } else {

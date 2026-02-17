@@ -48,7 +48,7 @@ class PaymentMethodListBottomSheet extends StatelessWidget {
                           controller.setPaymentMethod(
                             controller.methodList[index],
                           );
-                          Get.back();
+                          Navigator.pop(context);
                         },
                       );
                     },

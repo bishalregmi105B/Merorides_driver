@@ -78,13 +78,13 @@ class DownloadingDialogState extends State<DownloadingDialog> {
         ),
       );
 
-      Get.back();
+      if (mounted) Navigator.pop(context);
       CustomSnackBar.success(
         successList: ['${MyStrings.fileDownloadedSuccess}: $fullPath'],
       );
       setState(() {});
     } catch (e) {
-      Get.back();
+      if (mounted) Navigator.pop(context);
       CustomSnackBar.error(errorList: [MyStrings.requestFail]);
     }
   }
@@ -112,22 +112,22 @@ class DownloadingDialogState extends State<DownloadingDialog> {
 
         dynamic value = result['isSuccess'];
         if (value.toString() == 'true') {
-          Get.back();
+          if (mounted) Navigator.pop(context);
           CustomSnackBar.success(
             successList: [(MyStrings.fileDownloadedSuccess)],
           );
         } else {
-          Get.back();
+          if (mounted) Navigator.pop(context);
           CustomSnackBar.error(
             errorList: [result['errorMessage'] ?? MyStrings.requestFail],
           );
         }
       } else {
-        Get.back();
+        if (mounted) Navigator.pop(context);
         CustomSnackBar.error(errorList: [MyStrings.requestFail]);
       }
     } catch (e) {
-      Get.back();
+      if (mounted) Navigator.pop(context);
       CustomSnackBar.error(errorList: [MyStrings.requestFail]);
     }
   }

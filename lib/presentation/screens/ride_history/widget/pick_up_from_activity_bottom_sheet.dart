@@ -70,7 +70,7 @@ class PickUpRiderFromActivityBottomSheet extends StatelessWidget {
                           await controller.startRide(
                             ride.id ?? '-1',
                             onSuccess: () {
-                              Get.back();
+                              Navigator.pop(context);
                               Get.toNamed(
                                 RouteHelper.rideDetailsScreen,
                                 arguments: ride.id ?? '-1',
