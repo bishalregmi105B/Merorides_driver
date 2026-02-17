@@ -20,14 +20,13 @@ class ReservationDashboardScreen extends StatefulWidget {
   State<ReservationDashboardScreen> createState() => _ReservationDashboardScreenState();
 }
 
-class _ReservationDashboardScreenState extends State<ReservationDashboardScreen> 
-    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+class _ReservationDashboardScreenState extends State<ReservationDashboardScreen> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    
+
     // Check if reservation system is enabled
     if (!Get.find<LocalStorageService>().isReservationEnabled()) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -36,12 +35,12 @@ class _ReservationDashboardScreenState extends State<ReservationDashboardScreen>
       });
       return;
     }
-    
+
     _tabController = TabController(length: 3, vsync: this);
-    
+
     // Add listener for tab changes
     _tabController.addListener(_onTabChanged);
-    
+
     // Load data when screen is opened
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final controller = Get.find<DriverReservationController>();
@@ -50,12 +49,12 @@ class _ReservationDashboardScreenState extends State<ReservationDashboardScreen>
       }
     });
   }
-  
+
   void _onTabChanged() {
     if (!_tabController.indexIsChanging) return;
-    
+
     final controller = Get.find<DriverReservationController>();
-    
+
     switch (_tabController.index) {
       case 0: // Today tab
         controller.loadTodayReservations();
@@ -82,12 +81,12 @@ class _ReservationDashboardScreenState extends State<ReservationDashboardScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
-    
+
     return GetBuilder<DriverReservationController>(
       builder: (controller) {
         // Check if there are recurring reservations
         final hasRecurring = controller.assignedReservations.any((r) => r.isRecurring);
-        
+
         return Scaffold(
           backgroundColor: MyColor.screenBgColor,
           appBar: CustomAppBar(
@@ -121,106 +120,106 @@ class _ReservationDashboardScreenState extends State<ReservationDashboardScreen>
               ),
             ],
           ),
-      body: GetBuilder<DriverReservationController>(
-        builder: (controller) {
-          if (controller.isLoading && controller.assignedReservations.isEmpty) {
-            return const CustomLoader();
-          }
+          body: GetBuilder<DriverReservationController>(
+            builder: (controller) {
+              if (controller.isLoading && controller.assignedReservations.isEmpty) {
+                return const CustomLoader();
+              }
 
-          return Column(
-            children: [
-              // Statistics Cards
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: Dimensions.space15,
-                  vertical: Dimensions.space12,
-                ),
-                child: ReservationStatisticsCard(
-                  totalReservations: controller.totalReservations,
-                  activeReservations: controller.activeReservations,
-                  todayReservations: controller.todayCount,
-                  upcomingReservations: controller.upcomingCount,
-                ),
-              ),
-
-              // Tabs
-              Container(
-                decoration: BoxDecoration(
-                  color: MyColor.colorWhite,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.15),
-                      spreadRadius: 1,
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+              return Column(
+                children: [
+                  // Statistics Cards
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Dimensions.space15,
+                      vertical: Dimensions.space12,
                     ),
-                  ],
-                ),
-                child: TabBar(
-                  controller: _tabController,
-                  labelColor: MyColor.primaryColor,
-                  unselectedLabelColor: MyColor.colorGrey,
-                  indicatorColor: MyColor.primaryColor,
-                  indicatorWeight: 3,
-                  labelStyle: semiBoldDefault.copyWith(
-                    fontSize: 14,
+                    child: ReservationStatisticsCard(
+                      totalReservations: controller.totalReservations,
+                      activeReservations: controller.activeReservations,
+                      todayReservations: controller.todayCount,
+                      upcomingReservations: controller.upcomingCount,
+                    ),
                   ),
-                  unselectedLabelStyle: regularDefault,
-                  tabs: [
-                    Tab(
-                      icon: Icon(Icons.today, size: 20),
-                      text: MyStrings.today.tr,
-                    ),
-                    Tab(
-                      icon: Icon(Icons.upcoming, size: 20),
-                      text: MyStrings.upcoming.tr,
-                    ),
-                    Tab(
-                      icon: Icon(Icons.history, size: 20),
-                      text: MyStrings.history.tr,
-                    ),
-                  ],
-                ),
-              ),
 
-              // Tab Views
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    // Today's Reservations
-                    _buildReservationList(
-                      controller.todayReservations,
-                      emptyMessage: MyStrings.noReservationsToday.tr,
-                      emptyIcon: Icons.event_available,
-                      controller: controller,
-                      onRefresh: () => controller.refreshAllData(),
+                  // Tabs
+                  Container(
+                    decoration: BoxDecoration(
+                      color: MyColor.colorWhite,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.15),
+                          spreadRadius: 1,
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    
-                    // Upcoming Reservations
-                    _buildReservationList(
-                      controller.upcomingReservations,
-                      emptyMessage: MyStrings.noUpcomingReservations.tr,
-                      emptyIcon: Icons.calendar_today,
-                      controller: controller,
-                      onRefresh: () => controller.loadUpcomingReservations(),
+                    child: TabBar(
+                      controller: _tabController,
+                      labelColor: MyColor.primaryColor,
+                      unselectedLabelColor: MyColor.colorGrey,
+                      indicatorColor: MyColor.primaryColor,
+                      indicatorWeight: 3,
+                      labelStyle: semiBoldDefault.copyWith(
+                        fontSize: 14,
+                      ),
+                      unselectedLabelStyle: regularDefault,
+                      tabs: [
+                        Tab(
+                          icon: Icon(Icons.today, size: 20),
+                          text: MyStrings.today.tr,
+                        ),
+                        Tab(
+                          icon: Icon(Icons.upcoming, size: 20),
+                          text: MyStrings.upcoming.tr,
+                        ),
+                        Tab(
+                          icon: Icon(Icons.history, size: 20),
+                          text: MyStrings.history.tr,
+                        ),
+                      ],
                     ),
-                    
-                    // History
-                    _buildReservationList(
-                      controller.completedReservations,
-                      emptyMessage: MyStrings.noReservationHistory.tr,
-                      emptyIcon: Icons.history,
-                      controller: controller,
-                      onRefresh: () => controller.refreshAllData(),
+                  ),
+
+                  // Tab Views
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        // Today's Reservations
+                        _buildReservationList(
+                          controller.todayReservations,
+                          emptyMessage: MyStrings.noReservationsToday.tr,
+                          emptyIcon: Icons.event_available,
+                          controller: controller,
+                          onRefresh: () => controller.refreshAllData(),
+                        ),
+
+                        // Upcoming Reservations
+                        _buildReservationList(
+                          controller.upcomingReservations,
+                          emptyMessage: MyStrings.noUpcomingReservations.tr,
+                          emptyIcon: Icons.calendar_today,
+                          controller: controller,
+                          onRefresh: () => controller.loadUpcomingReservations(),
+                        ),
+
+                        // History
+                        _buildReservationList(
+                          controller.completedReservations,
+                          emptyMessage: MyStrings.noReservationHistory.tr,
+                          emptyIcon: Icons.history,
+                          controller: controller,
+                          onRefresh: () => controller.refreshAllData(),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
-      ),
+                  ),
+                ],
+              );
+            },
+          ),
         );
       },
     );
@@ -234,7 +233,7 @@ class _ReservationDashboardScreenState extends State<ReservationDashboardScreen>
     Future<void> Function()? onRefresh,
   }) {
     Widget content;
-    
+
     if (reservations.isEmpty) {
       content = CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -310,9 +309,7 @@ class _ReservationDashboardScreenState extends State<ReservationDashboardScreen>
   }
 
   void _showRecurringReservationsDialog(DriverReservationController controller) {
-    final recurringReservations = controller.assignedReservations
-        .where((r) => r.isRecurring)
-        .toList();
+    final recurringReservations = controller.assignedReservations.where((r) => r.isRecurring).toList();
 
     Get.bottomSheet(
       Container(

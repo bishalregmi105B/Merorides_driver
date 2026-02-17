@@ -27,7 +27,7 @@ class _PackageDashboardScreenState extends State<PackageDashboardScreen> with Si
   @override
   void initState() {
     super.initState();
-    
+
     // Check if package system is enabled
     if (!Get.find<LocalStorageService>().isPackageEnabled()) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -36,7 +36,7 @@ class _PackageDashboardScreenState extends State<PackageDashboardScreen> with Si
       });
       return;
     }
-    
+
     printX('🎯 PackageDashboardScreen initState called');
     _tabController = TabController(length: 2, vsync: this);
     // Data loading is now handled by DashBoardScreen.changeScreen()
@@ -66,15 +66,15 @@ class _PackageDashboardScreenState extends State<PackageDashboardScreen> with Si
           if (controller.isLoading && controller.assignedPackages.isEmpty) {
             return const Center(child: CustomLoader());
           }
-          
+
           return Column(
             children: [
               // Statistics Section
               _buildStatisticsSection(controller),
-              
+
               // Quick Actions for Schedule (NEW)
               _buildQuickActions(),
-              
+
               // Tabs
               Container(
                 color: Colors.white,
@@ -89,7 +89,7 @@ class _PackageDashboardScreenState extends State<PackageDashboardScreen> with Si
                   ],
                 ),
               ),
-              
+
               // Tab Content
               Expanded(
                 child: TabBarView(

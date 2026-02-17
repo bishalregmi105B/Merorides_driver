@@ -42,7 +42,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     );
 
     super.initState();
-    
+
     // Check if payment system is enabled
     if (!Get.find<ApiClient>().isPaymentSystemEnabled()) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -51,7 +51,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
       });
       return;
     }
-    
+
     WidgetsBinding.instance.addPostFrameCallback((time) {
       controller.loadPaymentHistory();
       scrollController.addListener(scrollListener);

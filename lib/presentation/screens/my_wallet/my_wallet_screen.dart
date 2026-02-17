@@ -52,7 +52,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
     );
 
     super.initState();
-    
+
     // Check if payment system is enabled
     if (!Get.find<ApiClient>().isPaymentSystemEnabled()) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

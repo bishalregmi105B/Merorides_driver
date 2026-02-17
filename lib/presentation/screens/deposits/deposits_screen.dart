@@ -52,7 +52,7 @@ class _DepositsScreenState extends State<DepositsScreen> {
     Get.put(DepositRepo(apiClient: Get.find()));
     final controller = Get.put(DepositController(depositRepo: Get.find()));
     super.initState();
-    
+
     // Check if payment system is enabled
     if (!Get.find<ApiClient>().isPaymentSystemEnabled()) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -61,7 +61,7 @@ class _DepositsScreenState extends State<DepositsScreen> {
       });
       return;
     }
-    
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       controller.beforeInitLoadData();
       scrollController.addListener(_scrollListener);
@@ -201,9 +201,7 @@ class _DepositsScreenState extends State<DepositsScreen> {
                                 ),
                                 status: controller.getStatus(index),
                                 statusBgColor: controller.getStatusColor(index),
-                                amount: Get.find<LocalStorageService>().canShowPrices()
-                                    ? "${StringConverter.formatNumber(controller.depositList[index].amount ?? " ")} ${controller.currency}"
-                                    : "",
+                                amount: Get.find<LocalStorageService>().canShowPrices() ? "${StringConverter.formatNumber(controller.depositList[index].amount ?? " ")} ${controller.currency}" : "",
                               );
                             },
                           ),

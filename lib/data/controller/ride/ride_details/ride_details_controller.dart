@@ -253,7 +253,9 @@ class RideDetailsController extends GetxController {
       isCancelBtnLoading = false;
       update();
       // Always close the bottom sheet/dialog regardless of result
-      Get.back();
+      if (Get.context != null && Navigator.canPop(Get.context!)) {
+        Navigator.pop(Get.context!);
+      }
     }
   }
 

@@ -20,7 +20,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 class IncomingRideScreen extends StatefulWidget {
   final bool isPackageRide;
   final bool isReservationRide;
-  
+
   const IncomingRideScreen({
     super.key,
     this.isPackageRide = false,
@@ -31,24 +31,22 @@ class IncomingRideScreen extends StatefulWidget {
   State<IncomingRideScreen> createState() => _IncomingRideScreenState();
 }
 
-class _IncomingRideScreenState extends State<IncomingRideScreen> 
-    with TickerProviderStateMixin {
-  
+class _IncomingRideScreenState extends State<IncomingRideScreen> with TickerProviderStateMixin {
   RideModel? ride;
   late AnimationController _pulseController;
   late AnimationController _slideController;
   late Animation<double> _pulseAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   Timer? _timeoutTimer;
   Timer? _vibrateTimer;
   int _remainingSeconds = 30;
   bool _isProcessing = false;
-  
+
   @override
   void initState() {
     super.initState();
-    
+
     // Get ride data from arguments - handle different types
     final args = Get.arguments;
     if (args is Map) {
@@ -74,20 +72,20 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
       Get.back();
       return;
     }
-    
+
     // Keep screen awake
     WakelockPlus.enable();
-    
+
     // Initialize animations
     _initializeAnimations();
-    
+
     // Start timeout timer
     _startTimeoutTimer();
-    
+
     // Play sound and vibrate
     _playAlertSound();
     _startVibration();
-    
+
     // Make status bar transparent
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -96,14 +94,14 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
       ),
     );
   }
-  
+
   void _initializeAnimations() {
     // Pulse animation for accept button
     _pulseController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _pulseAnimation = Tween<double>(
       begin: 1.0,
       end: 1.1,
@@ -111,13 +109,13 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
       parent: _pulseController,
       curve: Curves.easeInOut,
     ));
-    
+
     // Slide animation for buttons
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 1),
       end: Offset.zero,
@@ -125,23 +123,23 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
       parent: _slideController,
       curve: Curves.easeOutCubic,
     ));
-    
+
     // Start slide animation
     _slideController.forward();
   }
-  
+
   void _startTimeoutTimer() {
     _timeoutTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _remainingSeconds--;
       });
-      
+
       if (_remainingSeconds <= 0) {
         _handleTimeout();
       }
     });
   }
-  
+
   void _playAlertSound() async {
     try {
       // Play alert sound (you can use different sound for incoming rides)
@@ -150,7 +148,7 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
       printE('Error playing sound: $e');
     }
   }
-  
+
   void _startVibration() async {
     // Check if device can vibrate
     bool? canVibrate = await Vibration.hasVibrator();
@@ -161,12 +159,12 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
       });
     }
   }
-  
+
   void _stopVibration() {
     _vibrateTimer?.cancel();
     Vibration.cancel();
   }
-  
+
   void _handleTimeout() {
     _cleanup();
     Get.back();
@@ -178,33 +176,30 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
       snackPosition: SnackPosition.TOP,
     );
   }
-  
+
   void _handleAccept() async {
     if (_isProcessing) return;
-    
+
     setState(() {
       _isProcessing = true;
     });
-    
+
     _cleanup();
-    
+
     // Get dashboard controller
     final dashboardController = Get.find<DashBoardController>();
-    
+
     // Set bid amount
     dashboardController.updateMainAmount(
       double.tryParse(ride!.amount.toString()) ?? 0,
     );
-    
+
     // Navigate to ride details or show bid dialog
     Get.back(); // Close this screen
-    
+
     // Check if it's a package or reservation ride
-    bool isDirectAcceptance = widget.isPackageRide || 
-                             widget.isReservationRide ||
-                             ride!.isReservation == '1' || 
-                             ride!.isReservation == 'true';
-    
+    bool isDirectAcceptance = widget.isPackageRide || widget.isReservationRide || ride!.isReservation == '1' || ride!.isReservation == 'true';
+
     if (isDirectAcceptance) {
       // Direct acceptance for package/reservation rides
       Get.toNamed(RouteHelper.rideDetailsScreen, arguments: ride!.id);
@@ -215,17 +210,17 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
       ).customBottomSheet(Get.context!);
     }
   }
-  
+
   void _handleReject() {
     if (_isProcessing) return;
-    
+
     setState(() {
       _isProcessing = true;
     });
-    
+
     _cleanup();
     Get.back();
-    
+
     Get.snackbar(
       'Ride Rejected',
       'You have rejected the ride request',
@@ -234,20 +229,20 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
       snackPosition: SnackPosition.TOP,
     );
   }
-  
+
   void _cleanup() {
     _timeoutTimer?.cancel();
     _stopVibration();
     // AudioUtils.stopAudio(); // Stop audio if playing
     WakelockPlus.disable();
   }
-  
+
   @override
   void dispose() {
     _cleanup();
     _pulseController.dispose();
     _slideController.dispose();
-    
+
     // Restore status bar
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -255,10 +250,10 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
         statusBarIconBrightness: Brightness.light,
       ),
     );
-    
+
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     // If ride is null, show loading or return empty container
@@ -270,7 +265,7 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
         ),
       );
     }
-    
+
     return Scaffold(
       backgroundColor: MyColor.screenBgColor,
       body: Container(
@@ -306,9 +301,7 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
                         vertical: Dimensions.space5,
                       ),
                       decoration: BoxDecoration(
-                        color: _remainingSeconds <= 10
-                            ? MyColor.colorRed
-                            : MyColor.colorWhite.withValues(alpha: 0.2),
+                        color: _remainingSeconds <= 10 ? MyColor.colorRed : MyColor.colorWhite.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(Dimensions.cardRadius),
                       ),
                       child: Text(
@@ -321,7 +314,7 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
                   ],
                 ),
               ),
-              
+
               // Ride type indicator
               if (widget.isPackageRide)
                 Container(
@@ -381,9 +374,9 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
                     ],
                   ),
                 ),
-              
+
               const SizedBox(height: Dimensions.space20),
-              
+
               // Main content
               Expanded(
                 child: Container(
@@ -410,9 +403,9 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
                           fontSize: 48,
                         ),
                       ),
-                      
+
                       const SizedBox(height: Dimensions.space10),
-                      
+
                       // Distance & Duration
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -428,9 +421,9 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
                           ),
                         ],
                       ),
-                      
+
                       const SizedBox(height: Dimensions.space30),
-                      
+
                       // Pickup location
                       _buildLocationRow(
                         icon: Icons.trip_origin,
@@ -438,20 +431,22 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
                         title: 'PICKUP',
                         address: ride!.pickupLocation ?? 'Unknown location',
                       ),
-                      
+
                       // Dotted line
                       Container(
                         margin: const EdgeInsets.only(left: 12),
                         child: Column(
-                          children: List.generate(3, (index) => Container(
-                            width: 2,
-                            height: 8,
-                            margin: const EdgeInsets.symmetric(vertical: 2),
-                            color: MyColor.borderColor,
-                          )),
+                          children: List.generate(
+                              3,
+                              (index) => Container(
+                                    width: 2,
+                                    height: 8,
+                                    margin: const EdgeInsets.symmetric(vertical: 2),
+                                    color: MyColor.borderColor,
+                                  )),
                         ),
                       ),
-                      
+
                       // Destination
                       _buildLocationRow(
                         icon: Icons.location_on,
@@ -459,9 +454,9 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
                         title: 'DESTINATION',
                         address: ride!.destination ?? 'Unknown location',
                       ),
-                      
+
                       const SizedBox(height: Dimensions.space20),
-                      
+
                       // User info
                       if (ride!.user != null) ...[
                         const Divider(),
@@ -505,7 +500,7 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
                   ),
                 ),
               ),
-              
+
               // Action buttons
               SlideTransition(
                 position: _slideAnimation,
@@ -552,9 +547,9 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(width: Dimensions.space15),
-                      
+
                       // Accept button
                       Expanded(
                         child: ScaleTransition(
@@ -611,7 +606,7 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
       ),
     );
   }
-  
+
   Widget _buildInfoChip(IconData icon, String text) {
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -640,7 +635,7 @@ class _IncomingRideScreenState extends State<IncomingRideScreen>
       ),
     );
   }
-  
+
   Widget _buildLocationRow({
     required IconData icon,
     required Color iconColor,

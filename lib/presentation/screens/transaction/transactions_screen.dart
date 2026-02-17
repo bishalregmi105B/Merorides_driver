@@ -57,7 +57,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     );
 
     super.initState();
-    
+
     // Check if payment system is enabled
     if (!Get.find<ApiClient>().isPaymentSystemEnabled()) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -185,12 +185,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                                         DateTime.now(),
                                     formatType: DateFormatType.dateTime12hr,
                                   ),
-                                  amountData: Get.find<LocalStorageService>().canShowPrices()
-                                      ? "${controller.transactionList[index].trxType} ${controller.currencySym}${StringConverter.formatNumber(controller.transactionList[index].amount.toString())}"
-                                      : "",
-                                  postBalanceData: Get.find<LocalStorageService>().canShowPrices()
-                                      ? "${StringConverter.formatNumber(controller.transactionList[index].postBalance.toString())} ${controller.currency}"
-                                      : "",
+                                  amountData: Get.find<LocalStorageService>().canShowPrices() ? "${controller.transactionList[index].trxType} ${controller.currencySym}${StringConverter.formatNumber(controller.transactionList[index].amount.toString())}" : "",
+                                  postBalanceData: Get.find<LocalStorageService>().canShowPrices() ? "${StringConverter.formatNumber(controller.transactionList[index].postBalance.toString())} ${controller.currency}" : "",
                                 ),
                               );
                             },
