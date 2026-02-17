@@ -54,8 +54,6 @@ workflows:
     integrations:
       app_store_connect: Codemagic
     environment:
-      groups:
-        - Ash
       vars:
         BUNDLE_ID: "com.lamasparsha.merodriver"
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
