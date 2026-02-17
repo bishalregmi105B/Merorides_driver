@@ -112,8 +112,6 @@ workflows:
     integrations:
       app_store_connect: Codemagic
     environment:
-      groups:
-        - Ash
       vars:
         PACKAGE_NAME: "com.lamasparsha.merodriver"
         BUNDLE_ID: "com.lamasparsha.merodriver"
