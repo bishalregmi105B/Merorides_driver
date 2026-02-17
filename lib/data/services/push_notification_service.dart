@@ -55,8 +55,8 @@ class PushNotificationService {
     if (Platform.isIOS) {
       String? apnsToken = await messaging.getAPNSToken();
       if (apnsToken == null) {
-        // Wait a bit for APNs token if not immediately available
-        await Future.delayed(const Duration(seconds: 3));
+        // Brief wait for APNs token — native AppDelegate handles the primary forwarding
+        await Future.delayed(const Duration(seconds: 1));
         apnsToken = await messaging.getAPNSToken();
       }
       printX('APNS Token: $apnsToken');
