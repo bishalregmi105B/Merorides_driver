@@ -110,8 +110,8 @@ workflows:
       app_store_connect: Codemagic
     environment:
       ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.lamasparsha.merodriver
+        provisioning_profiles:
+          - mero_rides_driver_appstore
       vars:
         PACKAGE_NAME: "com.lamasparsha.merodriver"
         BUNDLE_ID: "com.lamasparsha.merodriver"
