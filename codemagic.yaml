@@ -54,6 +54,8 @@ workflows:
     integrations:
       app_store_connect: Codemagic
     environment:
+      groups:
+        - Ash
       vars:
         BUNDLE_ID: "com.merorides.meroridesdriver"
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
@@ -78,7 +80,7 @@ workflows:
           cd ios && pod install --repo-update && cd ..
       - name: Fetch signing files
         script: |
-          openssl genrsa -out /tmp/cert_key.pem 2048
+          echo "$CERTIFICATE_PRIVATE_KEY" > /tmp/cert_key.pem
           app-store-connect fetch-signing-files "com.merorides.meroridesdriver" \
             --type IOS_APP_STORE \
             --create \
@@ -115,6 +117,8 @@ workflows:
     integrations:
       app_store_connect: Codemagic
     environment:
+      groups:
+        - Ash
       vars:
         PACKAGE_NAME: "com.lamasparsha.merodriver"
         BUNDLE_ID: "com.merorides.meroridesdriver"
@@ -153,7 +157,7 @@ workflows:
           cd ios && pod install --repo-update && cd ..
       - name: Fetch signing files
         script: |
-          openssl genrsa -out /tmp/cert_key.pem 2048
+          echo "$CERTIFICATE_PRIVATE_KEY" > /tmp/cert_key.pem
           app-store-connect fetch-signing-files "com.merorides.meroridesdriver" \
             --type IOS_APP_STORE \
             --create \
